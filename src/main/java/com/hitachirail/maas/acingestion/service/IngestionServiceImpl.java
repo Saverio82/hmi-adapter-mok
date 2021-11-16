@@ -14,6 +14,9 @@ import java.util.List;
 @Slf4j
 public class IngestionServiceImpl  implements IngestionService {
 
+    private static final String CLAIM_PROPERTY = "scope";
+    private static final String SCOPE_VALUE = "ac-ingestion";
+
     private ProducerService<Position> positionProducerService;
     private ProducerService<BluetoothCountingData> bluetoothCountingDataProducerService;
     private ProducerService<PeopleCountingData> peopleCountingDataProducerService;
@@ -34,35 +37,35 @@ public class IngestionServiceImpl  implements IngestionService {
     }
 
     @AuthClaimVerify
-    @AuthClaimRule(claimProperty = "scope", equalToValue = "eav", required = true)
+    @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishPositionOnInternalKafkaQueues(List<Position> positions) {
         this.positionProducerService.publishListOnKafkaBulkTopic(positions);
     }
 
     @AuthClaimVerify
-    @AuthClaimRule(claimProperty = "scope", equalToValue = "eav", required = true)
+    @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishBluetoothCountingDataOnInternalKafkaQueues(List<BluetoothCountingData> bluetoothCountingData) {
         this.bluetoothCountingDataProducerService.publishListOnKafkaBulkTopic(bluetoothCountingData);
     }
 
     @AuthClaimVerify
-    @AuthClaimRule(claimProperty = "scope", equalToValue = "eav", required = true)
+    @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishPeopleCountingDataOnInternalKafkaQueues(List<PeopleCountingData> peopleCountingData) {
         this.peopleCountingDataProducerService.publishListOnKafkaBulkTopic(peopleCountingData);
     }
 
     @AuthClaimVerify
-    @AuthClaimRule(claimProperty = "scope", equalToValue = "eav", required = true)
+    @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishSeatCountingDataAggregateOnInternalKafkaQueues(List<SeatCountingDataAggregate> seatCountingDataAggregate) {
         this.seatCountingDataAggregateProducerService.publishListOnKafkaBulkTopic(seatCountingDataAggregate);
     }
 
     @AuthClaimVerify
-    @AuthClaimRule(claimProperty = "scope", equalToValue = "eav", required = true)
+    @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishStationCongestionOnInternalKafkaQueues(List<StationCongestion> stationCongestionList) {
         this.stationCongestionProducerService.publishListOnKafkaBulkTopic(stationCongestionList);

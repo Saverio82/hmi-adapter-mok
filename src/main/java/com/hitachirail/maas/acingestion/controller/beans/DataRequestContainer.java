@@ -1,4 +1,4 @@
-package com.hitachirail.maas.acingestion.beans;
+package com.hitachirail.maas.acingestion.controller.beans;
 
 import lombok.*;
 
@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class DataRequestContainer<T> {
 
-    private String topic;
     private List<T> data;
 
 }
