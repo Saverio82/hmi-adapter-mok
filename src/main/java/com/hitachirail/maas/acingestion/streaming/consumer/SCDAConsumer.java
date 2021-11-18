@@ -1,16 +1,17 @@
 package com.hitachirail.maas.acingestion.streaming.consumer;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
+import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
+import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
 import com.hitachirail.maas.acingestion.beans.SeatCountingDataAggregate;
-import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +19,16 @@ import java.util.List;
 @Slf4j
 public class SCDAConsumer {
 
-    private ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducerService;
-    private Gson gson;
+    @MaasProducer(
+            kafkaTopic = "${kafka.seat.counting.data.aggregate.topic}"
+    )
+    private MaasProducerComponent seatCountingDataAggregateProducer;
+
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public SCDAConsumer(ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducerService,
-                        Gson gson) {
-        this.seatCountingDataAggregateProducerService = seatCountingDataAggregateProducerService;
-        this.gson = gson;
+    public SCDAConsumer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","SeatCountingDataAggregateBulk"})
@@ -34,21 +37,19 @@ public class SCDAConsumer {
             consumerGroupId = "${consumer.data.ingestion.group.id}"
 
     )
-    public void consumeSCDATopic(List<String> messages) {
+    public void consumeSCDATopic(List<String> messages) throws JsonProcessingException {
         log.info("consume messages on 'SeatCountingDataAggregate' topic.");
 
         List<SeatCountingDataAggregate> seatCountingDataAggregateList = new ArrayList<>();
 
-        Type type = new TypeToken<List<SeatCountingDataAggregate>>() {}.getType();
-
         for(String message : messages)
-            seatCountingDataAggregateList.addAll(gson.fromJson(message, type));
+            seatCountingDataAggregateList.addAll(objectMapper.readValue(message, new TypeReference<List<SeatCountingDataAggregate>>(){}));
 
         log.debug("SeatCountingDataAggregate list size extracted: {}", seatCountingDataAggregateList.size());
 
         //TODO: Entity Enrichment
 
-        this.seatCountingDataAggregateProducerService.publishListOnKafkaOfficialTopic(seatCountingDataAggregateList);
+        this.seatCountingDataAggregateProducer.publish(objectMapper.writeValueAsString(seatCountingDataAggregateList));
     }
 
 }

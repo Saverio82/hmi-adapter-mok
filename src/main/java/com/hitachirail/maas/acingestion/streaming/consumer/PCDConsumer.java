@@ -1,16 +1,17 @@
 package com.hitachirail.maas.acingestion.streaming.consumer;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
+import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
+import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
 import com.hitachirail.maas.acingestion.beans.PeopleCountingData;
-import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +19,16 @@ import java.util.List;
 @Slf4j
 public class PCDConsumer {
 
-    private ProducerService<PeopleCountingData> peopleCountingDataProducerService;
-    private Gson gson;
+    @MaasProducer(
+            kafkaTopic = "${kafka.people.counting.data.topic}"
+    )
+    private MaasProducerComponent peopleCountingDataProducer;
+
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public PCDConsumer(ProducerService<PeopleCountingData> peopleCountingDataProducerService,
-                       Gson gson){
-        this.peopleCountingDataProducerService = peopleCountingDataProducerService;
-        this.gson = gson;
+    public PCDConsumer(ObjectMapper objectMapper){
+        this.objectMapper = objectMapper;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","PeopleCountingDataBulk"})
@@ -33,19 +36,17 @@ public class PCDConsumer {
             kafkaTopic = "${kafka.people.counting.data.bulk.topic}",
             consumerGroupId = "${consumer.data.ingestion.group.id}"
     )
-    public void consumerPCDTopic(List<String> messages){
+    public void consumerPCDTopic(List<String> messages) throws JsonProcessingException {
         log.info("consumer messages on 'PeopleCountingData' topic");
 
         List<PeopleCountingData> peopleCountingDataList = new ArrayList<>();
 
-        Type type = new TypeToken<List<PeopleCountingData>>() {}.getType();
-
         for(String message : messages)
-            peopleCountingDataList.addAll(gson.fromJson(message, type));
+            peopleCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<PeopleCountingData>>(){}));
 
         log.debug("PeopleCountingData list size extracted: {}", peopleCountingDataList.size());
 
-        this.peopleCountingDataProducerService.publishListOnKafkaOfficialTopic(peopleCountingDataList);
+        this.peopleCountingDataProducer.publish(objectMapper.writeValueAsString(peopleCountingDataList));
 
     }
 

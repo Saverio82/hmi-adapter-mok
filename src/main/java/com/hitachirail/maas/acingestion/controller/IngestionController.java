@@ -1,5 +1,6 @@
 package com.hitachirail.maas.acingestion.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hitachirail.maas.acingestion.beans.*;
 import com.hitachirail.maas.acingestion.controller.beans.DataRequestContainer;
 import com.hitachirail.maas.acingestion.service.IngestionService;
@@ -27,7 +28,7 @@ public class IngestionController {
     }
 
     @PostMapping("/seat-counting-data")
-    public ResponseEntity<String> insertSeatCountingDataAggregate(@RequestBody DataRequestContainer<SeatCountingDataAggregate> dataRequestContainer) {
+    public ResponseEntity<String> insertSeatCountingDataAggregate(@RequestBody DataRequestContainer<SeatCountingDataAggregate> dataRequestContainer) throws JsonProcessingException {
         if(dataRequestContainer.getData() == null || dataRequestContainer.getData().isEmpty()) {
             return new ResponseEntity<>(LIST_EMPTY_ERROR_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -40,7 +41,7 @@ public class IngestionController {
     }
 
     @PostMapping("/people-counting-data")
-    public ResponseEntity<String> insertPeopleCountingData(@RequestBody DataRequestContainer<PeopleCountingData> dataRequestContainer){
+    public ResponseEntity<String> insertPeopleCountingData(@RequestBody DataRequestContainer<PeopleCountingData> dataRequestContainer) throws JsonProcessingException {
         if(dataRequestContainer.getData() == null || dataRequestContainer.getData().isEmpty()) {
             return new ResponseEntity<>(LIST_EMPTY_ERROR_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -53,7 +54,7 @@ public class IngestionController {
     }
 
     @PostMapping("/bluetooth-counting-data")
-    public ResponseEntity<String> insertBluetoothCountingData(@RequestBody DataRequestContainer<BluetoothCountingData> dataRequestContainer){
+    public ResponseEntity<String> insertBluetoothCountingData(@RequestBody DataRequestContainer<BluetoothCountingData> dataRequestContainer) throws JsonProcessingException {
         if(dataRequestContainer.getData() == null || dataRequestContainer.getData().isEmpty()) {
             return new ResponseEntity<>(LIST_EMPTY_ERROR_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -66,7 +67,7 @@ public class IngestionController {
     }
 
     @PostMapping("/position")
-    public ResponseEntity<String> insertPosition(@RequestBody DataRequestContainer<Position> dataRequestContainer){
+    public ResponseEntity<String> insertPosition(@RequestBody DataRequestContainer<Position> dataRequestContainer) throws JsonProcessingException {
         if(dataRequestContainer.getData() == null || dataRequestContainer.getData().isEmpty()) {
             return new ResponseEntity<>(LIST_EMPTY_ERROR_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -79,7 +80,7 @@ public class IngestionController {
     }
 
     @PostMapping("/station-congestion")
-    public ResponseEntity<String> insertStationCongestion(@RequestBody DataRequestContainer<StationCongestion> dataRequestContainer){
+    public ResponseEntity<String> insertStationCongestion(@RequestBody DataRequestContainer<StationCongestion> dataRequestContainer) throws JsonProcessingException {
         if(dataRequestContainer.getData() == null || dataRequestContainer.getData().isEmpty()) {
             return new ResponseEntity<>(LIST_EMPTY_ERROR_MSG, HttpStatus.BAD_REQUEST);
         }

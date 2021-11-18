@@ -1,16 +1,17 @@
 package com.hitachirail.maas.acingestion.streaming.consumer;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
+import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
+import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
 import com.hitachirail.maas.acingestion.beans.Position;
-import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +19,16 @@ import java.util.List;
 @Slf4j
 public class PositionConsumer {
 
-    private ProducerService<Position>  positionProducerService;
-    private Gson gson;
+    @MaasProducer(
+            kafkaTopic = "${kafka.position.topic}"
+    )
+    private MaasProducerComponent positionProducer;
+
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public PositionConsumer(ProducerService<Position> positionProducerService,
-                            Gson gson){
-        this.positionProducerService = positionProducerService;
-        this.gson = gson;
+    public PositionConsumer(ObjectMapper objectMapper){
+        this.objectMapper = objectMapper;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","PositionBulk"})
@@ -33,19 +36,17 @@ public class PositionConsumer {
             kafkaTopic = "${kafka.position.bulk.topic}",
             consumerGroupId = "${consumer.data.ingestion.group.id}"
     )
-    public void consumerPCDTopic(List<String> messages){
+    public void consumerPCDTopic(List<String> messages) throws JsonProcessingException {
         log.info("consumer messages on 'Position' topic");
 
         List<Position> positionList = new ArrayList<>();
 
-        Type type = new TypeToken<List<Position>>() {}.getType();
-
         for(String message : messages)
-            positionList.addAll(gson.fromJson(message, type));
+            positionList.addAll(objectMapper.readValue(message, new TypeReference<List<Position>>(){}));
 
         log.debug("Position list size extracted: {}", positionList.size());
 
-        this.positionProducerService.publishListOnKafkaOfficialTopic(positionList);
+        this.positionProducer.publish(objectMapper.writeValueAsString(positionList));
 
     }
 

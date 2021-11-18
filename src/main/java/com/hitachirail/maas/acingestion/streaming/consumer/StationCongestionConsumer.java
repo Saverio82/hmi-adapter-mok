@@ -1,16 +1,17 @@
 package com.hitachirail.maas.acingestion.streaming.consumer;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
+import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
+import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
 import com.hitachirail.maas.acingestion.beans.StationCongestion;
-import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +19,16 @@ import java.util.List;
 @Slf4j
 public class StationCongestionConsumer {
 
-    private ProducerService<StationCongestion> stationCongestionProducerService;
-    private Gson gson;
+    @MaasProducer(
+            kafkaTopic = "${kafka.station.congestion.topic}"
+    )
+    private MaasProducerComponent stationCongestionProducer;
+
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public StationCongestionConsumer(ProducerService<StationCongestion> stationCongestionProducerService,
-                        Gson gson) {
-        this.stationCongestionProducerService = stationCongestionProducerService;
-        this.gson = gson;
+    public StationCongestionConsumer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","StationCongestionBulk"})
@@ -33,21 +36,19 @@ public class StationCongestionConsumer {
             kafkaTopic = "${kafka.station.congestion.bulk.topic}",
             consumerGroupId = "${consumer.data.ingestion.group.id}"
     )
-    public void consumeStationCongestionTopic(List<String> messages) {
+    public void consumeStationCongestionTopic(List<String> messages) throws JsonProcessingException {
         log.info("consume messages on 'StationCongestionBulkTopic' topic.");
 
         List<StationCongestion> stationCongestionList = new ArrayList<>();
 
-        Type type = new TypeToken<List<StationCongestion>>() {}.getType();
-
         for(String message : messages)
-            stationCongestionList.addAll(gson.fromJson(message, type));
+            stationCongestionList.addAll(objectMapper.readValue(message, new TypeReference<List<StationCongestion>>(){}));
 
         log.debug("StationCongestion list size extracted: {}", stationCongestionList.size());
 
         //TODO: Entity enrichment
 
-        this.stationCongestionProducerService.publishListOnKafkaOfficialTopic(stationCongestionList);
+        this.stationCongestionProducer.publish(objectMapper.writeValueAsString(stationCongestionList));
     }
 
 }
