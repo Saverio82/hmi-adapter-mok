@@ -6,9 +6,9 @@ import com.hitachirail.maas.acingestion.beans.*;
 import java.util.List;
 
 public interface IngestionService {
-    void publishPositionOnInternalKafkaQueues(List<Position> positionList) throws JsonProcessingException;
-    void publishBluetoothCountingDataOnInternalKafkaQueues(List<BluetoothCountingData> bluetoothCountingDataList) throws JsonProcessingException;
-    void publishPeopleCountingDataOnInternalKafkaQueues(List<PeopleCountingData> peopleCountingDataList) throws JsonProcessingException;
-    void publishSeatCountingDataAggregateOnInternalKafkaQueues(List<SeatCountingDataAggregate> seatCountingDataAggregateList) throws JsonProcessingException;
-    void publishStationCongestionOnInternalKafkaQueues(List<StationCongestion> stationCongestionList) throws JsonProcessingException;
+    void publishPositionOnInternalKafkaQueues(List<Position> positionList) throws Exception;
+    void publishBluetoothCountingDataOnInternalKafkaQueues(List<BluetoothCountingData> bluetoothCountingDataList) throws Exception;
+    void publishPeopleCountingDataOnInternalKafkaQueues(List<PeopleCountingData> peopleCountingDataList) throws Exception;
+    void publishSeatCountingDataAggregateOnInternalKafkaQueues(List<SeatCountingDataAggregate> seatCountingDataAggregateList) throws Exception;
+    void publishStationCongestionOnInternalKafkaQueues(List<StationCongestion> stationCongestionList) throws Exception;
 }

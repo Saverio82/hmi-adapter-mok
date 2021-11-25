@@ -5,9 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
-import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
-import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
-import com.hitachirail.maas.acingestion.beans.BluetoothCountingData;
+import com.hitachirail.maas.acingestion.businessentity.BusinessBluetoothCountingData;
+import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +18,13 @@ import java.util.List;
 @Slf4j
 public class BCDConsumer {
 
-    @MaasProducer(
-            kafkaTopic = "${kafka.bluetooth.counting.data.topic}"
-    )
-    private MaasProducerComponent bluetoothCountingDataProducer;
-
     private ObjectMapper objectMapper;
+    private ProducerService<BusinessBluetoothCountingData> bluetoothCountingDataProducer;
 
     @Autowired
-    public BCDConsumer(ObjectMapper objectMapper){
+    public BCDConsumer(ObjectMapper objectMapper, ProducerService<BusinessBluetoothCountingData> bluetoothCountingDataProducer){
         this.objectMapper = objectMapper;
+        this.bluetoothCountingDataProducer = bluetoothCountingDataProducer;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","BluetoothCountingDataBulk"})
@@ -39,15 +35,14 @@ public class BCDConsumer {
     public void consumerBCDTopic(List<String> messages) throws JsonProcessingException {
         log.info("consumer messages on 'BluetoothCountingData' topic");
 
-        List<BluetoothCountingData> bluetoothCountingDataList = new ArrayList<>();
+        List<BusinessBluetoothCountingData> bluetoothCountingDataList = new ArrayList<>();
 
         for(String message : messages)
-            bluetoothCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<BluetoothCountingData>>(){}));
+            bluetoothCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<BusinessBluetoothCountingData>>(){}));
 
         log.debug("BluetoothCountingData list size extracted: {}", bluetoothCountingDataList.size());
 
-        this.bluetoothCountingDataProducer.publish(objectMapper.writeValueAsString(bluetoothCountingDataList));
-
+        this.bluetoothCountingDataProducer.publishListOnKafkaOfficialTopic(bluetoothCountingDataList);
     }
 
 }

@@ -5,9 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
-import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
-import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
-import com.hitachirail.maas.acingestion.beans.StationCongestion;
+import com.hitachirail.maas.acingestion.businessentity.BusinessStationCongestion;
+import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +18,13 @@ import java.util.List;
 @Slf4j
 public class StationCongestionConsumer {
 
-    @MaasProducer(
-            kafkaTopic = "${kafka.station.congestion.topic}"
-    )
-    private MaasProducerComponent stationCongestionProducer;
-
     private ObjectMapper objectMapper;
+    private ProducerService<BusinessStationCongestion> stationCongestionProducer;
 
     @Autowired
-    public StationCongestionConsumer(ObjectMapper objectMapper) {
+    public StationCongestionConsumer(ObjectMapper objectMapper, ProducerService<BusinessStationCongestion> stationCongestionProducer) {
         this.objectMapper = objectMapper;
+        this.stationCongestionProducer = stationCongestionProducer;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","StationCongestionBulk"})
@@ -39,16 +35,16 @@ public class StationCongestionConsumer {
     public void consumeStationCongestionTopic(List<String> messages) throws JsonProcessingException {
         log.info("consume messages on 'StationCongestionBulkTopic' topic.");
 
-        List<StationCongestion> stationCongestionList = new ArrayList<>();
+        List<BusinessStationCongestion> stationCongestionList = new ArrayList<>();
 
         for(String message : messages)
-            stationCongestionList.addAll(objectMapper.readValue(message, new TypeReference<List<StationCongestion>>(){}));
+            stationCongestionList.addAll(objectMapper.readValue(message, new TypeReference<List<BusinessStationCongestion>>(){}));
 
         log.debug("StationCongestion list size extracted: {}", stationCongestionList.size());
 
         //TODO: Entity enrichment
 
-        this.stationCongestionProducer.publish(objectMapper.writeValueAsString(stationCongestionList));
+        this.stationCongestionProducer.publishListOnKafkaOfficialTopic(stationCongestionList);
     }
 
 }
