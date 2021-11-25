@@ -5,8 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
+import com.hitachirail.maas.acingestion.beans.Position;
 import com.hitachirail.maas.acingestion.businessentity.BusinessPosition;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
+import com.hitachirail.maas.acingestion.dto.business.factory.PositionBusinessFactory;
+import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectUtils;
+import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +22,18 @@ import java.util.List;
 @Slf4j
 public class PositionConsumer {
 
-    private ProducerService<BusinessPosition> positionProducer;
+    private ProducerService<BusinessObjectWrapper<BusinessPosition>> positionProducer;
 
     private ObjectMapper objectMapper;
 
+
+    BusinessObjectUtils businessObjectUtils;
+
     @Autowired
-    public PositionConsumer(ObjectMapper objectMapper, ProducerService<BusinessPosition> positionProducer){
+   public PositionConsumer(ObjectMapper objectMapper, ProducerService<BusinessObjectWrapper<BusinessPosition>> positionProducer, BusinessObjectUtils businessObjectUtils){
         this.objectMapper = objectMapper;
         this.positionProducer = positionProducer;
+        this.businessObjectUtils = businessObjectUtils;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","PositionBulk"})
@@ -36,14 +44,20 @@ public class PositionConsumer {
     public void consumerPCDTopic(List<String> messages) throws JsonProcessingException {
         log.info("consumer messages on 'Position' topic");
 
-        List<BusinessPosition> positionList = new ArrayList<>();
+        List<Position> positionList = new ArrayList<>();
 
         for(String message : messages)
-            positionList.addAll(objectMapper.readValue(message, new TypeReference<List<BusinessPosition>>(){}));
+            positionList.addAll(objectMapper.readValue(message, new TypeReference<List<Position>>(){}));
 
         log.debug("Position list size extracted: {}", positionList.size());
 
-        this.positionProducer.publishListOnKafkaOfficialTopic(positionList);
+
+        for(Position position : positionList){
+            BusinessObjectWrapper<BusinessPosition> wrapper = PositionBusinessFactory.createPositionBusiness(position, businessObjectUtils.getTenantId(position.getOperator()));
+            this.positionProducer.publishOnKafkaOfficialTopic(wrapper);
+        }
+
+
 
     }
 

@@ -5,7 +5,6 @@ import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
 import com.hitachirail.maas.acingestion.beans.BluetoothCountingData;
-import com.hitachirail.maas.acingestion.businessentity.BusinessBluetoothCountingData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 @MaasProducerUser
 @Slf4j
-public class BCDProducerService implements ProducerService <BusinessBluetoothCountingData>{
+public class BCDProducerService implements ProducerService <BluetoothCountingData>{
 
     @MaasProducer(
             kafkaTopic = "${kafka.bluetooth.counting.data.bulk.topic}"
@@ -33,14 +32,14 @@ public class BCDProducerService implements ProducerService <BusinessBluetoothCou
     }
 
     @Override
-    public void publishListOnKafkaBulkTopic(List<BusinessBluetoothCountingData> payload) {
+    public void publishListOnKafkaBulkTopic(List<BluetoothCountingData> payload) {
         log.debug("publish list of {} elements into 'BluetoothCountingData' bulk topic", payload.size());
 
         this.internalKafkaProducer.publish(gson.toJson(payload));
     }
 
     @Override
-    public void publishListOnKafkaOfficialTopic(List<BusinessBluetoothCountingData> payload){
+    public void publishListOnKafkaOfficialTopic(List<BluetoothCountingData> payload){
         log.debug("publish list of {} elements into 'BluetoothCountingData' bulk topic", payload.size());
 
         this.officialKafkaProducer.publish(gson.toJson(payload));

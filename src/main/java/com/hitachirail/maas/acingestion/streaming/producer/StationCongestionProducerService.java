@@ -5,7 +5,6 @@ import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
 import com.hitachirail.maas.acingestion.beans.StationCongestion;
-import com.hitachirail.maas.acingestion.businessentity.BusinessStationCongestion;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 @MaasProducerUser
 @Slf4j
-public class StationCongestionProducerService implements ProducerService<BusinessStationCongestion> {
+public class StationCongestionProducerService implements ProducerService<StationCongestion> {
 
     @MaasProducer(
             kafkaTopic = "${kafka.station.congestion.bulk.topic}"
@@ -33,14 +32,14 @@ public class StationCongestionProducerService implements ProducerService<Busines
     }
 
     @Override
-    public void publishListOnKafkaBulkTopic(List<BusinessStationCongestion> payload) {
+    public void publishListOnKafkaBulkTopic(List<StationCongestion> payload) {
         log.debug("publish list of {} elements into 'PeopleCountingData' bulk topic", payload.size());
 
         this.internalKafkaProducer.publish(gson.toJson(payload));
     }
 
     @Override
-    public void publishListOnKafkaOfficialTopic(List<BusinessStationCongestion> payload){
+    public void publishListOnKafkaOfficialTopic(List<StationCongestion> payload){
         log.debug("publish list of {} elements into 'PeopleCountingData' bulk topic", payload.size());
 
         this.officialKafkaProducer.publish(gson.toJson(payload));

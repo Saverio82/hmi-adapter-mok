@@ -5,38 +5,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
-import com.hitachirail.maas.acingestion.beans.Position;
+import com.hitachirail.maas.acingestion.businessentity.BusinessPosition;
 import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 @MaasProducerUser
-@Slf4j
-public class PositionProducerService implements ProducerService<Position> {
+public class BusinessPositionProducerService implements ProducerService<BusinessObjectWrapper<BusinessPosition>>{
 
     @MaasProducer(
-            kafkaTopic = "${kafka.position.bulk.topic}"
+            kafkaTopic = "${kafka.position.topic}"
     )
-    private MaasProducerComponent internalKafkaProducer;
-
+    private MaasProducerComponent officialKafkaProducer;
 
     private ObjectMapper objectMapper;
 
     @Autowired
-    public PositionProducerService(ObjectMapper objectMapper) {
+    public BusinessPositionProducerService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
+
     @Override
-    public void publishListOnKafkaBulkTopic(List<Position> payload) throws JsonProcessingException {
-        log.debug("publish list of {} elements into 'Position' bulk topic", payload.size());
-
-        this.internalKafkaProducer.publish(objectMapper.writeValueAsString(payload));
+    public void publishOnKafkaOfficialTopic(BusinessObjectWrapper<BusinessPosition> payload) throws JsonProcessingException {
+        this.officialKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
-
-
-
-
 }

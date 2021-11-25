@@ -1,12 +1,10 @@
 package com.hitachirail.maas.acingestion.beans;
 
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
 
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -25,28 +23,4 @@ public class SeatCountingDataAggregate {
     private Integer diagnosticStatus;
     private List<SeatCountingDataDetails> seatCountingDataDetailsList;
 
-    @JsonCreator
-    public SeatCountingDataAggregate(@JsonProperty("parent_vehicle_id") String parentVehicleId,
-                                     @JsonProperty(value = "vehicle_id", required = true) String vehicleId,
-                                     @JsonProperty("trip_id") String tripId,
-                                     @JsonProperty("source_system_id") String sourceSystemId,
-                                     @JsonProperty(value = "type", required = true) Integer type,
-                                     @JsonProperty(value = "operator", required = true) String operator,
-                                     @JsonProperty(value = "seating_occupancy", required = true) Integer seatingOccupancy,
-                                     @JsonProperty(value = "sys_ts", required = true) Long sysTimestamp,
-                                     @JsonProperty(value = "msg_id", required = true) String messageId,
-                                     @JsonProperty(value = "diagnostic_status", required = true) Integer diagnosticStatus,
-                                     @JsonProperty(value = "updates", required = true) List<SeatCountingDataDetails> seatCountingDataDetailsList) {
-        this.parentVehicleId = parentVehicleId;
-        this.vehicleId = vehicleId;
-        this.tripId = tripId;
-        this.sourceSystemId = sourceSystemId;
-        this.type = type;
-        this.operator = operator;
-        this.seatingOccupancy = seatingOccupancy;
-        this.sysTimestamp = sysTimestamp;
-        this.messageId = messageId;
-        this.diagnosticStatus = diagnosticStatus;
-        this.seatCountingDataDetailsList = seatCountingDataDetailsList;
-    }
 }
