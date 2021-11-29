@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
-import com.hitachirail.maas.acingestion.beans.SeatCountingDataAggregate;
 
-import com.hitachirail.maas.acingestion.businessentity.BusinessSeatCountingDataAggregate;
+import com.hitachirail.maas.acingestion.beans.SeatCountingDataAggregate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,7 +14,7 @@ import java.util.List;
 
 @MaasProducerUser
 @Slf4j
-public class SCDAProducerService implements ProducerService<BusinessSeatCountingDataAggregate> {
+public class SCDAProducerService implements ProducerService<SeatCountingDataAggregate> {
 
     @MaasProducer(
             kafkaTopic = "${kafka.seat.counting.data.aggregate.bulk.topic}"
@@ -35,14 +34,14 @@ public class SCDAProducerService implements ProducerService<BusinessSeatCounting
     }
 
     @Override
-    public void publishListOnKafkaBulkTopic(List<BusinessSeatCountingDataAggregate> payload) {
+    public void publishListOnKafkaBulkTopic(List<SeatCountingDataAggregate> payload) {
         log.debug("publish list of {} elements into 'SeatCountingDataAggregate' bulk topic", payload.size());
 
         this.internalKafkaProducer.publish(gson.toJson(payload));
     }
 
     @Override
-    public void publishListOnKafkaOfficialTopic(List<BusinessSeatCountingDataAggregate> payload) {
+    public void publishListOnKafkaOfficialTopic(List<SeatCountingDataAggregate> payload) {
         log.debug("publish list of {} elements into 'SeatCountingDataAggregate' bulk topic", payload.size());
 
         this.officialKafkaProducer.publish(gson.toJson(payload));

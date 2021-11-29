@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
-import com.hitachirail.maas.acingestion.businessentity.BusinessPeopleCountingData;
+import com.hitachirail.maas.acingestion.beans.PeopleCountingData;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import java.util.List;
 public class PCDConsumer {
 
     private ObjectMapper objectMapper;
-    private ProducerService<BusinessPeopleCountingData> peopleCountingDataProducer;
+    private ProducerService<PeopleCountingData> peopleCountingDataProducer;
 
     @Autowired
-    public PCDConsumer(ObjectMapper objectMapper, ProducerService<BusinessPeopleCountingData> peopleCountingDataProducer){
+    public PCDConsumer(ObjectMapper objectMapper, ProducerService<PeopleCountingData> peopleCountingDataProducer){
         this.objectMapper = objectMapper;
         this.peopleCountingDataProducer = peopleCountingDataProducer;
     }
@@ -35,10 +35,10 @@ public class PCDConsumer {
     public void consumerPCDTopic(List<String> messages) throws JsonProcessingException {
         log.info("consumer messages on 'PeopleCountingData' topic");
 
-        List<BusinessPeopleCountingData> peopleCountingDataList = new ArrayList<>();
+        List<PeopleCountingData> peopleCountingDataList = new ArrayList<>();
 
         for(String message : messages)
-            peopleCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<BusinessPeopleCountingData>>(){}));
+            peopleCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<PeopleCountingData>>(){}));
 
         log.debug("PeopleCountingData list size extracted: {}", peopleCountingDataList.size());
 

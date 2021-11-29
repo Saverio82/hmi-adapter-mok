@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
-import com.hitachirail.maas.acingestion.businessentity.BusinessBluetoothCountingData;
+import com.hitachirail.maas.acingestion.beans.BluetoothCountingData;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import java.util.List;
 public class BCDConsumer {
 
     private ObjectMapper objectMapper;
-    private ProducerService<BusinessBluetoothCountingData> bluetoothCountingDataProducer;
+    private ProducerService<BluetoothCountingData> bluetoothCountingDataProducer;
 
     @Autowired
-    public BCDConsumer(ObjectMapper objectMapper, ProducerService<BusinessBluetoothCountingData> bluetoothCountingDataProducer){
+    public BCDConsumer(ObjectMapper objectMapper, ProducerService<BluetoothCountingData> bluetoothCountingDataProducer){
         this.objectMapper = objectMapper;
         this.bluetoothCountingDataProducer = bluetoothCountingDataProducer;
     }
@@ -35,10 +35,10 @@ public class BCDConsumer {
     public void consumerBCDTopic(List<String> messages) throws JsonProcessingException {
         log.info("consumer messages on 'BluetoothCountingData' topic");
 
-        List<BusinessBluetoothCountingData> bluetoothCountingDataList = new ArrayList<>();
+        List<BluetoothCountingData> bluetoothCountingDataList = new ArrayList<>();
 
         for(String message : messages)
-            bluetoothCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<BusinessBluetoothCountingData>>(){}));
+            bluetoothCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<BluetoothCountingData>>(){}));
 
         log.debug("BluetoothCountingData list size extracted: {}", bluetoothCountingDataList.size());
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
-import com.hitachirail.maas.acingestion.businessentity.BusinessStationCongestion;
+import com.hitachirail.maas.acingestion.beans.StationCongestion;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import java.util.List;
 public class StationCongestionConsumer {
 
     private ObjectMapper objectMapper;
-    private ProducerService<BusinessStationCongestion> stationCongestionProducer;
+    private ProducerService<StationCongestion> stationCongestionProducer;
 
     @Autowired
-    public StationCongestionConsumer(ObjectMapper objectMapper, ProducerService<BusinessStationCongestion> stationCongestionProducer) {
+    public StationCongestionConsumer(ObjectMapper objectMapper, ProducerService<StationCongestion> stationCongestionProducer) {
         this.objectMapper = objectMapper;
         this.stationCongestionProducer = stationCongestionProducer;
     }
@@ -35,10 +35,10 @@ public class StationCongestionConsumer {
     public void consumeStationCongestionTopic(List<String> messages) throws JsonProcessingException {
         log.info("consume messages on 'StationCongestionBulkTopic' topic.");
 
-        List<BusinessStationCongestion> stationCongestionList = new ArrayList<>();
+        List<StationCongestion> stationCongestionList = new ArrayList<>();
 
         for(String message : messages)
-            stationCongestionList.addAll(objectMapper.readValue(message, new TypeReference<List<BusinessStationCongestion>>(){}));
+            stationCongestionList.addAll(objectMapper.readValue(message, new TypeReference<List<StationCongestion>>(){}));
 
         log.debug("StationCongestion list size extracted: {}", stationCongestionList.size());
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
-import com.hitachirail.maas.acingestion.businessentity.BusinessSeatCountingDataAggregate;
+import com.hitachirail.maas.acingestion.beans.SeatCountingDataAggregate;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +18,12 @@ import java.util.List;
 @Slf4j
 public class SCDAConsumer {
 
-    private ProducerService<BusinessSeatCountingDataAggregate> seatCountingDataAggregateProducer;
+    private ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer;
 
     private ObjectMapper objectMapper;
 
     @Autowired
-    public SCDAConsumer(ObjectMapper objectMapper, ProducerService<BusinessSeatCountingDataAggregate> seatCountingDataAggregateProducer) {
+    public SCDAConsumer(ObjectMapper objectMapper, ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer) {
         this.objectMapper = objectMapper;
         this.seatCountingDataAggregateProducer = seatCountingDataAggregateProducer;
     }
@@ -37,10 +37,10 @@ public class SCDAConsumer {
     public void consumeSCDATopic(List<String> messages) throws JsonProcessingException {
         log.info("consume messages on 'SeatCountingDataAggregate' topic.");
 
-        List<BusinessSeatCountingDataAggregate> seatCountingDataAggregateList = new ArrayList<>();
+        List<SeatCountingDataAggregate> seatCountingDataAggregateList = new ArrayList<>();
 
         for(String message : messages)
-            seatCountingDataAggregateList.addAll(objectMapper.readValue(message, new TypeReference<List<BusinessSeatCountingDataAggregate>>(){}));
+            seatCountingDataAggregateList.addAll(objectMapper.readValue(message, new TypeReference<List<SeatCountingDataAggregate>>(){}));
 
         log.debug("SeatCountingDataAggregate list size extracted: {}", seatCountingDataAggregateList.size());
 
