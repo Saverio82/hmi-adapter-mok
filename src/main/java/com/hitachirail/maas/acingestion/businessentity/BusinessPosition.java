@@ -20,8 +20,8 @@ public  class BusinessPosition {
     private Long sysTimestamp;
 
     @JsonCreator
-    @Builder
-    public BusinessPosition(@JsonProperty("service_journey_id")String serviceJourneyId,
+    public BusinessPosition(@JsonProperty("tenant_id")Long tenantId,
+                            @JsonProperty("service_journey_id")String serviceJourneyId,
                             @JsonProperty("source_system_id")String sourceSystemId,
                             @JsonProperty("message_id")String messageId,
                             @JsonProperty("diagnostic_status")Integer diagnosticStatus,

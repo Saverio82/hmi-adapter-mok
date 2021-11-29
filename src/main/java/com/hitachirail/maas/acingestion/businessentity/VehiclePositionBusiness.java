@@ -11,6 +11,7 @@ import lombok.*;
 public class VehiclePositionBusiness extends BusinessPosition {
 
     private String vehicleId;
+    /*
     private Long tenantId;
     private String serviceJourneyId;
     private String sourceSystemId;
@@ -19,10 +20,11 @@ public class VehiclePositionBusiness extends BusinessPosition {
     private Double latitude;
     private Double longitude;
     private Long sysTimestamp;
-
+*/
 
 
     @JsonCreator
+    @Builder
     public VehiclePositionBusiness(@JsonProperty("vehicle_id")String vehicleId,
                            @JsonProperty("tenant_id")Long tenantId,
                            @JsonProperty("service_journey_id")String serviceJourneyId,
@@ -32,12 +34,13 @@ public class VehiclePositionBusiness extends BusinessPosition {
                            @JsonProperty("latitude")Double latitude,
                            @JsonProperty("longitude")Double longitude,
                            @JsonProperty("sys_timestamp")Long sysTimestamp) {
-        super(serviceJourneyId, sourceSystemId, messageId,
+        super(tenantId, serviceJourneyId, sourceSystemId, messageId,
                 diagnosticStatus, latitude, longitude,
                 sysTimestamp);
         this.vehicleId = vehicleId;
-        this.tenantId =tenantId;
+
     }
+
 
     public VehiclePositionBusiness() {
     }

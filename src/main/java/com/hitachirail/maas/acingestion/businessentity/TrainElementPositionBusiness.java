@@ -11,17 +11,11 @@ import lombok.*;
 public class TrainElementPositionBusiness extends BusinessPosition {
 
     private String trainElementId;
-    private Long tenantId;
     private String trainId;
-    private String serviceJourneyId;
-    private String sourceSystemId;
-    private String messageId;
-    private Integer diagnosticStatus;
-    private Double latitude;
-    private Double longitude;
-    private Long sysTimestamp;
+
 
     @JsonCreator
+    @Builder
     public TrainElementPositionBusiness(@JsonProperty("train_element_id")String trainElementId,
                                         @JsonProperty("tenant_id")Long tenantId,
                                         @JsonProperty("train_id")String trainId,
@@ -32,11 +26,10 @@ public class TrainElementPositionBusiness extends BusinessPosition {
                                         @JsonProperty("latitude")Double latitude,
                                         @JsonProperty("longitude")Double longitude,
                                         @JsonProperty("sys_timestamp")Long sysTimestamp) {
-        super(serviceJourneyId, sourceSystemId, messageId,
+        super(tenantId, serviceJourneyId, sourceSystemId, messageId,
                 diagnosticStatus, latitude, longitude,
                 sysTimestamp);
         this.trainElementId = trainElementId;
-        this.tenantId = tenantId;
         this.trainId = trainId;
         /*
         this.serviceJourneyId = serviceJourneyId;

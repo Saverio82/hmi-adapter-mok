@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 public class BusinessObjectWrapper <T> {
-    private Integer type;
+    private String type;
     private T BusinessObject;
 
 

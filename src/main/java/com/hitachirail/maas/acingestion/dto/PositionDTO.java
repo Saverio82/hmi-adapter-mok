@@ -14,6 +14,7 @@ public class PositionDTO {
     private String vehicleId;
     private String tripId;
     private String sourceSystemId;
+    private String serviceJourneyId;
     private Integer type;
     private String operator;
     private String messageId;
@@ -28,6 +29,7 @@ public class PositionDTO {
             @JsonProperty(value = "vehicle_id", required = true) String vehicleId,
             @JsonProperty("trip_id") String tripId,
             @JsonProperty("source_system_id") String sourceSystemId,
+            @JsonProperty("service_journey_id") String serviceJourneyId,
             @JsonProperty(value = "type", required = true) Integer type,
             @JsonProperty(value = "operator", required = true) String operator,
             @JsonProperty(value = "msg_id", required = true) String messageId,
@@ -40,6 +42,7 @@ public class PositionDTO {
         this.vehicleId = vehicleId;
         this.tripId = tripId;
         this.sourceSystemId = sourceSystemId;
+        this.serviceJourneyId = serviceJourneyId;
         this.type = type;
         this.operator = operator;
         this.messageId = messageId;
