@@ -22,14 +22,14 @@ public class IngestionServiceImpl  implements IngestionService {
     private static final String CLAIM_PROPERTY = "scope";
     private static final String SCOPE_VALUE = "ac-ingestion";
 
-    private ProducerService<Position> positionProducer;
+    private ProducerService<PositionDTO> positionProducer;
     private ProducerService<BluetoothCountingData> bluetoothCountingDataProducer;
     private ProducerService<PeopleCountingData> peopleCountingDataProducer;
     private ProducerService<StationCongestion> stationCongestionProducer;
     private ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer;
 
     @Autowired
-    public IngestionServiceImpl(ProducerService<Position> positionProducer,
+    public IngestionServiceImpl(ProducerService<PositionDTO> positionProducer,
                                 ProducerService<BluetoothCountingData> bluetoothCountingDataProducer,
                                 ProducerService<PeopleCountingData> peopleCountingDataProducer,
                                 ProducerService<StationCongestion> stationCongestionProducer,
@@ -45,7 +45,7 @@ public class IngestionServiceImpl  implements IngestionService {
     @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishPositionOnInternalKafkaQueues(List<PositionDTO> positionDTOS) throws Exception {
-        this.positionProducer.publishListOnKafkaBulkTopic(convertListToBusinessList(positionDTOS, Position.class));
+        this.positionProducer.publishListOnKafkaBulkTopic(positionDTOS);
     }
 
     @AuthClaimVerify

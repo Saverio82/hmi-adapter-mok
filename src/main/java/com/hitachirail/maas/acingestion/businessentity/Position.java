@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-public  class BusinessPosition {
+public  class Position {
 
     private Long tenantId;
     private String serviceJourneyId;
@@ -20,14 +20,8 @@ public  class BusinessPosition {
     private Long sysTimestamp;
 
     @JsonCreator
-    public BusinessPosition(@JsonProperty("tenant_id")Long tenantId,
-                            @JsonProperty("service_journey_id")String serviceJourneyId,
-                            @JsonProperty("source_system_id")String sourceSystemId,
-                            @JsonProperty("message_id")String messageId,
-                            @JsonProperty("diagnostic_status")Integer diagnosticStatus,
-                            @JsonProperty("latitude")Double latitude,
-                            @JsonProperty("longitude")Double longitude,
-                            @JsonProperty("sys_timestamp")Long sysTimestamp) {
+    public Position(Long tenantId, String serviceJourneyId, String sourceSystemId, String messageId, Integer diagnosticStatus,
+                    Double latitude, Double longitude, Long sysTimestamp) {
 
         this.tenantId = tenantId;
         this.serviceJourneyId = serviceJourneyId;
@@ -39,10 +33,8 @@ public  class BusinessPosition {
         this.sysTimestamp = sysTimestamp;
     }
 
-    public BusinessPosition() {
+    public Position() {
     }
 
-
-    ;
 
 }
