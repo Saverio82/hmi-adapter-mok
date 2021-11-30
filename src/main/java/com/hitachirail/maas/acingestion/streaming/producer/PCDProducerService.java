@@ -1,5 +1,7 @@
 package com.hitachirail.maas.acingestion.streaming.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
@@ -26,25 +28,25 @@ public class PCDProducerService implements ProducerService<PeopleCountingData>{
     )
     private MaasProducerComponent officialKafkaProducer;
 
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public PCDProducerService(Gson gson) {
-        this.gson = gson;
+    public PCDProducerService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public void publishListOnKafkaBulkTopic(List<PeopleCountingData> payload) {
+    public void publishListOnKafkaBulkTopic(List<PeopleCountingData> payload) throws JsonProcessingException {
          log.debug("publish list of {} elements into 'PeopleCountingData' bulk topic", payload.size());
 
-         this.internalKafkaProducer.publish(gson.toJson(payload));
+         this.internalKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
 
     @Override
-    public void publishListOnKafkaOfficialTopic(List<PeopleCountingData> payload){
+    public void publishListOnKafkaOfficialTopic(List<PeopleCountingData> payload) throws JsonProcessingException {
         log.debug("publish list of {} elements into 'PeopleCountingData' bulk topic", payload.size());
 
-        this.officialKafkaProducer.publish(gson.toJson(payload));
+        this.officialKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
 
 

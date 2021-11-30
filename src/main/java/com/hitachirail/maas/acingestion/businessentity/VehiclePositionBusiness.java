@@ -8,19 +8,10 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class VehiclePositionBusiness extends BusinessPosition {
+public class VehiclePositionBusiness extends PositionBusiness {
 
     private String vehicleId;
-    /*
-    private Long tenantId;
-    private String serviceJourneyId;
-    private String sourceSystemId;
-    private String messageId;
-    private Integer diagnosticStatus;
-    private Double latitude;
-    private Double longitude;
-    private Long sysTimestamp;
-*/
+
 
 
     @JsonCreator

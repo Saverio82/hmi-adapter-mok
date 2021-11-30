@@ -6,6 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
 import com.hitachirail.maas.acingestion.beans.PeopleCountingData;
+import com.hitachirail.maas.acingestion.businessentity.PCDBusiness;
+import com.hitachirail.maas.acingestion.businessentity.factory.PCDBusinessFactory;
+import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectUtils;
+import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +23,14 @@ import java.util.List;
 public class PCDConsumer {
 
     private ObjectMapper objectMapper;
-    private ProducerService<PeopleCountingData> peopleCountingDataProducer;
+    private ProducerService<BusinessObjectWrapper<PCDBusiness>> peopleCountingDataProducer;
+    private BusinessObjectUtils businessObjectUtils;
 
     @Autowired
-    public PCDConsumer(ObjectMapper objectMapper, ProducerService<PeopleCountingData> peopleCountingDataProducer){
+    public PCDConsumer(ObjectMapper objectMapper, ProducerService<BusinessObjectWrapper<PCDBusiness>> peopleCountingDataProducer, BusinessObjectUtils businessObjectUtils){
         this.objectMapper = objectMapper;
         this.peopleCountingDataProducer = peopleCountingDataProducer;
+        this.businessObjectUtils = businessObjectUtils;
     }
 
     @Timed(value="maas.kafka.consumer", extraTags = {"type","PeopleCountingDataBulk"})
@@ -42,7 +48,10 @@ public class PCDConsumer {
 
         log.debug("PeopleCountingData list size extracted: {}", peopleCountingDataList.size());
 
-        this.peopleCountingDataProducer.publishListOnKafkaOfficialTopic(peopleCountingDataList);
+        for(PeopleCountingData peopleCountingData : peopleCountingDataList){
+            BusinessObjectWrapper<PCDBusiness> wrapper = PCDBusinessFactory.createPCDBusiness(peopleCountingData, businessObjectUtils.getTenantId(peopleCountingData.getOperator()));
+            this.peopleCountingDataProducer.publishOnKafkaOfficialTopic(wrapper);
+        }
     }
 
 }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
 import com.hitachirail.maas.acingestion.beans.Position;
-import com.hitachirail.maas.acingestion.businessentity.BusinessPosition;
+import com.hitachirail.maas.acingestion.businessentity.PositionBusiness;
 import com.hitachirail.maas.acingestion.businessentity.factory.PositionBusinessFactory;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectUtils;
@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 public class PositionConsumer {
 
-    private ProducerService<BusinessObjectWrapper<BusinessPosition>> positionProducer;
+    private ProducerService<BusinessObjectWrapper<PositionBusiness>> positionProducer;
 
     private ObjectMapper objectMapper;
 
@@ -30,7 +30,7 @@ public class PositionConsumer {
     BusinessObjectUtils businessObjectUtils;
 
     @Autowired
-   public PositionConsumer(ObjectMapper objectMapper, ProducerService<BusinessObjectWrapper<BusinessPosition>> positionProducer, BusinessObjectUtils businessObjectUtils){
+   public PositionConsumer(ObjectMapper objectMapper, ProducerService<BusinessObjectWrapper<PositionBusiness>> positionProducer, BusinessObjectUtils businessObjectUtils){
         this.objectMapper = objectMapper;
         this.positionProducer = positionProducer;
         this.businessObjectUtils = businessObjectUtils;
@@ -53,7 +53,7 @@ public class PositionConsumer {
 
 
         for(Position position : positionList){
-            BusinessObjectWrapper<BusinessPosition> wrapper = PositionBusinessFactory.createPositionBusiness(position, businessObjectUtils.getTenantId(position.getOperator()));
+            BusinessObjectWrapper<PositionBusiness> wrapper = PositionBusinessFactory.createPositionBusiness(position, businessObjectUtils.getTenantId(position.getOperator()));
             this.positionProducer.publishOnKafkaOfficialTopic(wrapper);
         }
 

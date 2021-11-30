@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class TrainElementPositionBusiness extends BusinessPosition {
+public class TrainElementPositionBusiness extends PositionBusiness {
 
     private String trainElementId;
     private String trainId;
