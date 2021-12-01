@@ -1,5 +1,6 @@
 package com.hitachirail.maas.acingestion.service;
 
+import com.google.gson.JsonIOException;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachirail.maas.acingestion.beans.*;
 import com.hitachirail.maas.acingestion.dto.*;
@@ -7,6 +8,7 @@ import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import com.hitachirail.maas.securityframework.authvalidation.AuthClaimRule;
 import com.hitachirail.maas.securityframework.authvalidation.AuthClaimVerify;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -22,16 +25,16 @@ public class IngestionServiceImpl  implements IngestionService {
     private static final String CLAIM_PROPERTY = "scope";
     private static final String SCOPE_VALUE = "ac-ingestion";
 
-    private ProducerService<Position> positionProducer;
+    private ProducerService<PositionDTO> positionProducer;
     private ProducerService<BluetoothCountingData> bluetoothCountingDataProducer;
-    private ProducerService<PeopleCountingData> peopleCountingDataProducer;
+    private ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer;
     private ProducerService<StationCongestion> stationCongestionProducer;
     private ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer;
 
     @Autowired
-    public IngestionServiceImpl(ProducerService<Position> positionProducer,
+    public IngestionServiceImpl(ProducerService<PositionDTO> positionProducer,
                                 ProducerService<BluetoothCountingData> bluetoothCountingDataProducer,
-                                ProducerService<PeopleCountingData> peopleCountingDataProducer,
+                                ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer,
                                 ProducerService<StationCongestion> stationCongestionProducer,
                                 ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer) {
         this.positionProducer = positionProducer;
@@ -45,7 +48,7 @@ public class IngestionServiceImpl  implements IngestionService {
     @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishPositionOnInternalKafkaQueues(List<PositionDTO> positionDTOS) throws Exception {
-        this.positionProducer.publishListOnKafkaBulkTopic(convertListToBusinessList(positionDTOS, Position.class));
+        this.positionProducer.publishListOnKafkaBulkTopic(positionDTOS);
     }
 
     @AuthClaimVerify
@@ -59,7 +62,12 @@ public class IngestionServiceImpl  implements IngestionService {
     @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishPeopleCountingDataOnInternalKafkaQueues(List<PeopleCountingDataDTO> peopleCountingDatumDTOS) throws Exception {
-        this.peopleCountingDataProducer.publishListOnKafkaBulkTopic(convertListToBusinessList(peopleCountingDatumDTOS, PeopleCountingData.class));
+        peopleCountingDatumDTOS.stream().filter(p -> StringUtils.isEmpty(p.getStopId()) && (p.getLongitude() == null || p.getLongitude() == null)).
+                forEach(p -> {
+                    throw new JsonIOException("Error in data with data with vehicle_id "+
+                            p.getVehicleId()+": stopId, latitude and longitude cannot all be null");
+                } );
+        this.peopleCountingDataProducer.publishListOnKafkaBulkTopic(peopleCountingDatumDTOS);
     }
 
     @AuthClaimVerify

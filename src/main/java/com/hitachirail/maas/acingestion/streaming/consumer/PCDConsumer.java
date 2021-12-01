@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasConsumerFactory;
-import com.hitachirail.maas.acingestion.beans.PeopleCountingData;
-import com.hitachirail.maas.acingestion.businessentity.PCDBusiness;
+import com.hitachirail.maas.acingestion.businessentity.PeopleCountingData;
 import com.hitachirail.maas.acingestion.businessentity.factory.PCDBusinessFactory;
+import com.hitachirail.maas.acingestion.dto.PeopleCountingDataDTO;
 import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectUtils;
 import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
@@ -23,11 +23,11 @@ import java.util.List;
 public class PCDConsumer {
 
     private ObjectMapper objectMapper;
-    private ProducerService<BusinessObjectWrapper<PCDBusiness>> peopleCountingDataProducer;
+    private ProducerService<BusinessObjectWrapper<PeopleCountingData>> peopleCountingDataProducer;
     private BusinessObjectUtils businessObjectUtils;
 
     @Autowired
-    public PCDConsumer(ObjectMapper objectMapper, ProducerService<BusinessObjectWrapper<PCDBusiness>> peopleCountingDataProducer, BusinessObjectUtils businessObjectUtils){
+    public PCDConsumer(ObjectMapper objectMapper, ProducerService<BusinessObjectWrapper<PeopleCountingData>> peopleCountingDataProducer, BusinessObjectUtils businessObjectUtils){
         this.objectMapper = objectMapper;
         this.peopleCountingDataProducer = peopleCountingDataProducer;
         this.businessObjectUtils = businessObjectUtils;
@@ -41,15 +41,15 @@ public class PCDConsumer {
     public void consumerPCDTopic(List<String> messages) throws JsonProcessingException {
         log.info("consumer messages on 'PeopleCountingData' topic");
 
-        List<PeopleCountingData> peopleCountingDataList = new ArrayList<>();
+        List<PeopleCountingDataDTO> peopleCountingDataList = new ArrayList<>();
 
         for(String message : messages)
-            peopleCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<PeopleCountingData>>(){}));
+            peopleCountingDataList.addAll(objectMapper.readValue(message, new TypeReference<List<PeopleCountingDataDTO>>(){}));
 
         log.debug("PeopleCountingData list size extracted: {}", peopleCountingDataList.size());
 
-        for(PeopleCountingData peopleCountingData : peopleCountingDataList){
-            BusinessObjectWrapper<PCDBusiness> wrapper = PCDBusinessFactory.createPCDBusiness(peopleCountingData, businessObjectUtils.getTenantId(peopleCountingData.getOperator()));
+        for(PeopleCountingDataDTO peopleCountingData : peopleCountingDataList){
+            BusinessObjectWrapper<PeopleCountingData> wrapper = PCDBusinessFactory.createPCDBusiness(peopleCountingData, businessObjectUtils.getTenantId(peopleCountingData.getOperator()));
             this.peopleCountingDataProducer.publishOnKafkaOfficialTopic(wrapper);
         }
     }

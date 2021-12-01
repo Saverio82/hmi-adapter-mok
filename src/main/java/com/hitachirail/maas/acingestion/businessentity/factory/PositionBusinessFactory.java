@@ -1,32 +1,32 @@
 package com.hitachirail.maas.acingestion.businessentity.factory;
 
-import com.hitachirail.maas.acingestion.businessentity.PositionBusiness;
-import com.hitachirail.maas.acingestion.businessentity.TrainElementPositionBusiness;
-import com.hitachirail.maas.acingestion.businessentity.VehiclePositionBusiness;
-import com.hitachirail.maas.acingestion.beans.Position;
+import com.hitachirail.maas.acingestion.businessentity.Position;
+import com.hitachirail.maas.acingestion.businessentity.TrainElementPosition;
+import com.hitachirail.maas.acingestion.businessentity.VehiclePosition;
+import com.hitachirail.maas.acingestion.dto.PositionDTO;
 import com.hitachirail.maas.acingestion.enums.ElementTypeEnum;
 import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
 
 public class PositionBusinessFactory {
 
-    public static BusinessObjectWrapper<PositionBusiness> createPositionBusiness(Position position, Long tenantId){
+    public static BusinessObjectWrapper<Position> createPositionBusiness(PositionDTO position, Long tenantId){
         switch (position.getType()){
             case 0:
                 BusinessObjectWrapper wrapper = new BusinessObjectWrapper(ElementTypeEnum.TRAIN_ELEMENT.name(), buildTrainElementPositionBuiness(position, tenantId));
                 return wrapper;
             case 1:
-                return new BusinessObjectWrapper<PositionBusiness>(ElementTypeEnum.VEHICLE.name(), buildVehiclePositionBuiness(position, tenantId));
+                return new BusinessObjectWrapper<Position>(ElementTypeEnum.VEHICLE.name(), buildVehiclePositionBuiness(position, tenantId));
             default: return null;
         }
 
     }
 
-    private static VehiclePositionBusiness  buildVehiclePositionBuiness(Position position, Long tenantId){
-        return new VehiclePositionBusiness().builder().
+    private static VehiclePosition buildVehiclePositionBuiness(PositionDTO position, Long tenantId){
+        return new VehiclePosition().builder().
                tenantId(tenantId).
                 vehicleId(position.getVehicleId()).
                 messageId(position.getMessageId()).
-                serviceJourneyId(position.getSourceSystemId()).
+                serviceJourneyId(position.getTripId()).
                 diagnosticStatus(position.getDiagnosticStatus()).
                 sourceSystemId(position.getSourceSystemId()).
                 latitude(position.getLatitude()).
@@ -36,13 +36,13 @@ public class PositionBusinessFactory {
 
     }
 
-    private static TrainElementPositionBusiness  buildTrainElementPositionBuiness(Position position, Long tenantId){
-        return new TrainElementPositionBusiness().builder().
+    private static TrainElementPosition buildTrainElementPositionBuiness(PositionDTO position, Long tenantId){
+        return new TrainElementPosition().builder().
                 tenantId(tenantId).
                 trainElementId(position.getVehicleId()).
                 trainId(position.getParentVehicleId()).
                 messageId(position.getMessageId()).
-                serviceJourneyId(position.getSourceSystemId()).
+                serviceJourneyId(position.getTripId()).
                 diagnosticStatus(position.getDiagnosticStatus()).
                 sourceSystemId(position.getSourceSystemId()).
                 latitude(position.getLatitude()).

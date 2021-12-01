@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
-import com.hitachirail.maas.acingestion.beans.Position;
-import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
+import com.hitachirail.maas.acingestion.dto.PositionDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,7 +13,7 @@ import java.util.List;
 
 @MaasProducerUser
 @Slf4j
-public class PositionProducerService implements ProducerService<Position> {
+public class PositionProducerService implements ProducerService<PositionDTO> {
 
     @MaasProducer(
             kafkaTopic = "${kafka.position.bulk.topic}"
@@ -30,7 +29,7 @@ public class PositionProducerService implements ProducerService<Position> {
     }
 
     @Override
-    public void publishListOnKafkaBulkTopic(List<Position> payload) throws JsonProcessingException {
+    public void publishListOnKafkaBulkTopic(List<PositionDTO> payload) throws JsonProcessingException {
         log.debug("publish list of {} elements into 'Position' bulk topic", payload.size());
 
         this.internalKafkaProducer.publish(objectMapper.writeValueAsString(payload));

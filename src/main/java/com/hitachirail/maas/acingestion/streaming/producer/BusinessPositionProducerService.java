@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
-import com.hitachirail.maas.acingestion.businessentity.PositionBusiness;
+import com.hitachirail.maas.acingestion.businessentity.Position;
 import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @MaasProducerUser
-public class BusinessPositionProducerService implements ProducerService<BusinessObjectWrapper<PositionBusiness>>{
+public class BusinessPositionProducerService implements ProducerService<BusinessObjectWrapper<Position>>{
 
     @MaasProducer(
             kafkaTopic = "${kafka.position.topic}"
@@ -26,7 +26,7 @@ public class BusinessPositionProducerService implements ProducerService<Business
 
 
     @Override
-    public void publishOnKafkaOfficialTopic(BusinessObjectWrapper<PositionBusiness> payload) throws JsonProcessingException {
+    public void publishOnKafkaOfficialTopic(BusinessObjectWrapper<Position> payload) throws JsonProcessingException {
         this.officialKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
 }

@@ -8,15 +8,24 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class VehiclePositionBusiness extends PositionBusiness {
+public class VehiclePosition extends Position {
 
     private String vehicleId;
-
+    /*
+    private Long tenantId;
+    private String serviceJourneyId;
+    private String sourceSystemId;
+    private String messageId;
+    private Integer diagnosticStatus;
+    private Double latitude;
+    private Double longitude;
+    private Long sysTimestamp;
+*/
 
 
     @JsonCreator
     @Builder
-    public VehiclePositionBusiness(@JsonProperty("vehicle_id")String vehicleId,
+    public VehiclePosition(@JsonProperty("vehicle_id")String vehicleId,
                            @JsonProperty("tenant_id")Long tenantId,
                            @JsonProperty("service_journey_id")String serviceJourneyId,
                            @JsonProperty("source_system_id")String sourceSystemId,
@@ -33,7 +42,7 @@ public class VehiclePositionBusiness extends PositionBusiness {
     }
 
 
-    public VehiclePositionBusiness() {
+    public VehiclePosition() {
     }
 
 

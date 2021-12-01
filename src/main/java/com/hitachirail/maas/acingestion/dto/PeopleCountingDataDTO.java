@@ -5,69 +5,57 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.JsonIOException;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
 public class PeopleCountingDataDTO {
 
+    @JsonProperty("parent_vehicle_id")
     private String parentVehicleId;
+    @NotNull
+    @JsonProperty("vehicle_id")
     private String vehicleId;
+    @JsonProperty("trip_id")
     private String tripId;
+    @JsonProperty("source_system_id")
     private String sourceSystemId;
+    @NotNull
+    @JsonProperty("type")
     private Integer type;
+    @NotNull
+    @JsonProperty("operator")
     private String operator;
+    @NotNull
+    @JsonProperty("sys_ts")
     private Long sysTimestamp;
+    @NotNull
+    @JsonProperty("msg_id")
     private String messageId;
+    @NotNull
+    @JsonProperty("in")
     private Integer peopleIn;
+    @NotNull
+    @JsonProperty("out")
     private Integer peopleOut;
+    @NotNull
+    @JsonProperty("count")
     private Integer peopleCount;
+    @JsonProperty("stop_id")
     private String stopId;
+    @JsonProperty("lat")
     private Double latitude;
+    @JsonProperty("lng")
     private Double longitude;
+    @JsonProperty("open_time")
     private Long openTime;
+    @NotNull
+    @JsonProperty("close_time")
     private Long closeTime;
+    @NotNull
+    @JsonProperty("diagnostic_status")
     private Integer diagnosticStatus;
-
-    @JsonCreator
-    public PeopleCountingDataDTO(@JsonProperty("parent_vehicle_id") String parentVehicleId,
-                                 @JsonProperty(value = "vehicle_id", required = true) String vehicleId,
-                                 @JsonProperty("trip_id") String tripId,
-                                 @JsonProperty("source_system_id") String sourceSystemId,
-                                 @JsonProperty(value = "type", required = true) Integer type,
-                                 @JsonProperty(value = "operator", required = true) String operator,
-                                 @JsonProperty(value = "sys_ts", required = true) Long sysTimestamp,
-                                 @JsonProperty(value = "msg_id", required = true) String messageId,
-                                 @JsonProperty(value = "in", required = true) Integer peopleIn,
-                                 @JsonProperty(value = "out", required = true) Integer peopleOut,
-                                 @JsonProperty(value = "count", required = true) Integer peopleCount,
-                                 @JsonProperty("stop_id") String stopId,
-                                 @JsonProperty("lat") Double latitude,
-                                 @JsonProperty("lng") Double longitude,
-                                 @JsonProperty(value = "open_time") Long openTime,
-                                 @JsonProperty(value = "close_time", required = true) Long closeTime,
-                                 @JsonProperty(value = "diagnostic_status", required = true) Integer diagnosticStatus) {
-        this.parentVehicleId = parentVehicleId;
-        this.vehicleId = vehicleId;
-        this.tripId = tripId;
-        this.sourceSystemId = sourceSystemId;
-        this.type = type;
-        this.operator = operator;
-        this.sysTimestamp = sysTimestamp;
-        this.messageId = messageId;
-        this.peopleIn = peopleIn;
-        this.peopleOut = peopleOut;
-        this.peopleCount = peopleCount;
-        this.stopId = stopId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.openTime = openTime;
-        this.closeTime = closeTime;
-        this.diagnosticStatus = diagnosticStatus;
-
-        if(this.stopId == null && (this.latitude == null || this.longitude == null)) {
-            throw new JsonIOException("stopId, latitude and longitude cannot all be null");
-        }
-    }
 
 }

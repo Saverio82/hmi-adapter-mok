@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class PCDBusiness {
+public class PeopleCountingData {
 
     private Long tenantId;
     private String serviceJourneyId;
@@ -23,22 +23,13 @@ public class PCDBusiness {
     private Integer peopleOut;
     private Integer peopleCount;
     private Long sysTimestamp;
+    private String scheduledStopPointId;
     private Long openTime;
     private Long closeTime;
 
-    public PCDBusiness(@JsonProperty("tenant_id")Long tenantId,
-                       @JsonProperty("service_journey_id")String serviceJourneyId,
-                       @JsonProperty("source_system_id")String sourceSystemId,
-                       @JsonProperty("message_id")String messageId,
-                       @JsonProperty("diagnostic_status")Integer diagnosticStatus,
-                       @JsonProperty("latitude")Double latitude,
-                       @JsonProperty("longitude")Double longitude,
-                       @JsonProperty("people_in")Integer peopleIn,
-                       @JsonProperty("people_out")Integer peopleOut,
-                       @JsonProperty("people_count")Integer peopleCount,
-                       @JsonProperty("sys_timestamp")Long sysTimestamp,
-                       @JsonProperty("open_time")Long openTime,
-                       @JsonProperty("close_time")Long closeTime){
+    public PeopleCountingData(Long tenantId, String serviceJourneyId, String sourceSystemId, String messageId, Integer diagnosticStatus,
+                              Double latitude, Double longitude, Integer peopleIn, Integer peopleOut, Integer peopleCount,
+                              Long sysTimestamp, Long openTime, Long closeTime, String scheduledStopPointId){
 
         this.tenantId = tenantId;
         this.serviceJourneyId = serviceJourneyId;
@@ -53,7 +44,8 @@ public class PCDBusiness {
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.sysTimestamp = sysTimestamp;
+        this.scheduledStopPointId = scheduledStopPointId;
     }
 
-    public PCDBusiness(){}
+    public PeopleCountingData(){}
 }
