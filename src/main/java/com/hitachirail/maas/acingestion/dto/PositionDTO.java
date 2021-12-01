@@ -37,7 +37,7 @@ public class PositionDTO {
     @JsonProperty("lat")
     private Double latitude;
     @NotNull
-    @JsonProperty("lon")
+    @JsonProperty("lng")
     private Double longitude;
     @NotNull
     @JsonProperty("sys_ts")

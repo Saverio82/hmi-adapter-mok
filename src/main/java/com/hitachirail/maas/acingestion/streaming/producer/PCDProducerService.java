@@ -1,20 +1,20 @@
 package com.hitachirail.maas.acingestion.streaming.producer;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
-import com.hitachirail.maas.acingestion.beans.PeopleCountingData;
+import com.hitachirail.maas.acingestion.dto.PeopleCountingDataDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 import java.util.List;
 
 
 @MaasProducerUser
 @Slf4j
-public class PCDProducerService implements ProducerService<PeopleCountingData>{
+public class PCDProducerService implements ProducerService<PeopleCountingDataDTO>{
 
     @MaasProducer(
             kafkaTopic = "${kafka.people.counting.data.bulk.topic}"
@@ -26,25 +26,25 @@ public class PCDProducerService implements ProducerService<PeopleCountingData>{
     )
     private MaasProducerComponent officialKafkaProducer;
 
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public PCDProducerService(Gson gson) {
-        this.gson = gson;
+    public PCDProducerService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public void publishListOnKafkaBulkTopic(List<PeopleCountingData> payload) {
+    public void publishListOnKafkaBulkTopic(List<PeopleCountingDataDTO> payload) throws JsonProcessingException {
          log.debug("publish list of {} elements into 'PeopleCountingData' bulk topic", payload.size());
 
-         this.internalKafkaProducer.publish(gson.toJson(payload));
+         this.internalKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
 
     @Override
-    public void publishListOnKafkaOfficialTopic(List<PeopleCountingData> payload){
+    public void publishListOnKafkaOfficialTopic(List<PeopleCountingDataDTO> payload) throws JsonProcessingException {
         log.debug("publish list of {} elements into 'PeopleCountingData' bulk topic", payload.size());
 
-        this.officialKafkaProducer.publish(gson.toJson(payload));
+        this.officialKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
 
 
