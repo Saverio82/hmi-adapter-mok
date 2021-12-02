@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -12,38 +13,32 @@ import java.util.List;
 @EqualsAndHashCode
 public class BluetoothCountingDataDTO {
 
+    @JsonProperty("parent_vehicle_id")
     private String parentVehicleId;
+    @NotNull
+    @JsonProperty("vehicle_id")
     private String vehicleId;
+    @JsonProperty("trip_id")
     private String tripId;
+    @JsonProperty("source_system_id")
     private String sourceSystemId;
+    @NotNull
+    @JsonProperty("type")
     private Integer type;
+    @NotNull
+    @JsonProperty("operator")
     private String operator;
+    @NotNull
+    @JsonProperty("msg_id")
     private String messageId;
+    @NotNull
+    @JsonProperty("diagnostic_status")
     private Integer diagnosticStatus;
+    @NotNull
+    @JsonProperty("sys_ts")
     private Long sysTimestamp;
+    @NotNull
+    @JsonProperty("updates")
     private List<DeviceDTO> deviceDTOS;
-
-    @JsonCreator
-    public BluetoothCountingDataDTO(@JsonProperty("parent_vehicle_id") String parentVehicleId,
-                                    @JsonProperty(value = "vehicle_id", required = true) String vehicleId,
-                                    @JsonProperty("trip_id") String tripId,
-                                    @JsonProperty("source_system_id") String sourceSystemId,
-                                    @JsonProperty(value = "type", required = true) Integer type,
-                                    @JsonProperty(value = "operator", required = true) String operator,
-                                    @JsonProperty(value = "msg_id", required = true) String messageId,
-                                    @JsonProperty(value = "diagnostic_status", required = true) Integer diagnosticStatus,
-                                    @JsonProperty(value = "sys_ts", required = true) Long sysTimestamp,
-                                    @JsonProperty(value = "updates", required = true) List<DeviceDTO> deviceDTOS) {
-        this.parentVehicleId = parentVehicleId;
-        this.vehicleId = vehicleId;
-        this.tripId = tripId;
-        this.sourceSystemId = sourceSystemId;
-        this.type = type;
-        this.operator = operator;
-        this.messageId = messageId;
-        this.diagnosticStatus = diagnosticStatus;
-        this.sysTimestamp = sysTimestamp;
-        this.deviceDTOS = deviceDTOS;
-    }
 
 }
