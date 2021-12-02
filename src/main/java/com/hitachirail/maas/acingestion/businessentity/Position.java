@@ -19,7 +19,7 @@ public  class Position {
     private Double longitude;
     private Long sysTimestamp;
 
-    @JsonCreator
+
     public Position(Long tenantId, String serviceJourneyId, String sourceSystemId, String messageId, Integer diagnosticStatus,
                     Double latitude, Double longitude, Long sysTimestamp) {
 

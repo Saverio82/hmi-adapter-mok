@@ -11,29 +11,10 @@ import lombok.*;
 public class VehiclePosition extends Position {
 
     private String vehicleId;
-    /*
-    private Long tenantId;
-    private String serviceJourneyId;
-    private String sourceSystemId;
-    private String messageId;
-    private Integer diagnosticStatus;
-    private Double latitude;
-    private Double longitude;
-    private Long sysTimestamp;
-*/
 
-
-    @JsonCreator
     @Builder
-    public VehiclePosition(@JsonProperty("vehicle_id")String vehicleId,
-                           @JsonProperty("tenant_id")Long tenantId,
-                           @JsonProperty("service_journey_id")String serviceJourneyId,
-                           @JsonProperty("source_system_id")String sourceSystemId,
-                           @JsonProperty("message_id")String messageId,
-                           @JsonProperty("diagnostic_status")Integer diagnosticStatus,
-                           @JsonProperty("latitude")Double latitude,
-                           @JsonProperty("longitude")Double longitude,
-                           @JsonProperty("sys_timestamp")Long sysTimestamp) {
+    public VehiclePosition(String vehicleId, Long tenantId, String serviceJourneyId, String sourceSystemId, String messageId,
+                           Integer diagnosticStatus, Double latitude, Double longitude, Long sysTimestamp) {
         super(tenantId, serviceJourneyId, sourceSystemId, messageId,
                 diagnosticStatus, latitude, longitude,
                 sysTimestamp);

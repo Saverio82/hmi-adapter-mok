@@ -6,20 +6,13 @@ import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducer;
 import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
 import com.hitachi.maas.ilspringlibrary.streaming.producer.MaasProducerComponent;
 import com.hitachirail.maas.acingestion.businessentity.BluetoothCountingData;
-import com.hitachirail.maas.acingestion.dto.BluetoothCountingDataDTO;
+import com.hitachirail.maas.acingestion.streaming.consumer.utils.BusinessObjectWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 @MaasProducerUser
 @Slf4j
-public class BCDProducerService implements ProducerService <BluetoothCountingDataDTO>{
-
-    @MaasProducer(
-            kafkaTopic = "${kafka.bluetooth.counting.data.bulk.topic}"
-    )
-    private MaasProducerComponent internalKafkaProducer;
+public class BusinessBCDProducerService implements ProducerService<BusinessObjectWrapper<BluetoothCountingData>>{
 
     @MaasProducer(
             kafkaTopic = "${kafka.bluetooth.counting.data.topic}"
@@ -29,23 +22,14 @@ public class BCDProducerService implements ProducerService <BluetoothCountingDat
     private ObjectMapper objectMapper;
 
     @Autowired
-    public BCDProducerService(ObjectMapper objectMapper) {
+    BusinessBCDProducerService(ObjectMapper objectMapper){
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public void publishListOnKafkaBulkTopic(List<BluetoothCountingDataDTO> payload) throws JsonProcessingException {
-        log.debug("publish list of {} elements into 'BluetoothCountingData' bulk topic", payload.size());
-
-        this.internalKafkaProducer.publish(objectMapper.writeValueAsString(payload));
-    }
-
-    @Override
-    public void publishListOnKafkaOfficialTopic(List<BluetoothCountingDataDTO> payload) throws JsonProcessingException {
-        log.debug("publish list of {} elements into 'BluetoothCountingData' bulk topic", payload.size());
-
+    public void publishOnKafkaOfficialTopic(BusinessObjectWrapper<BluetoothCountingData> payload) throws
+            JsonProcessingException {
         this.officialKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
-
 
 }

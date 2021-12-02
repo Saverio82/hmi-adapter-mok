@@ -5,37 +5,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.JsonIOException;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
 public class DeviceDTO {
 
+    @NotNull
+    @JsonProperty("device_id")
     private String deviceId;
+    @JsonProperty("stop_id")
     private String stopId;
+    @JsonProperty("lat")
     private Double latitude;
+    @JsonProperty("lng")
     private Double longitude;
+    @NotNull
+    @JsonProperty("status")
     private Integer status;
+    @NotNull
+    @JsonProperty("ble_ts")
     private Long bleTs;
 
-    @JsonCreator
-    public DeviceDTO(@JsonProperty(value = "device_id", required = true) String deviceId,
-                     @JsonProperty("stop_id") String stopId,
-                     @JsonProperty("lat") Double latitude,
-                     @JsonProperty("lng") Double longitude,
-                     @JsonProperty(value = "status", required = true) Integer status,
-                     @JsonProperty(value = "ble_ts", required = true) Long bleTs) {
-        this.deviceId = deviceId;
-        this.stopId = stopId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.status = status;
-        this.bleTs = bleTs;
-
-        if(this.stopId == null && (this.latitude == null || this.longitude == null)) {
-            throw new JsonIOException("stopId, latitude and longitude cannot all be null");
-        }
-
-    }
 
 }

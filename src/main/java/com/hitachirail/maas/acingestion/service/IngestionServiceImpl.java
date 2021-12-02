@@ -1,8 +1,8 @@
 package com.hitachirail.maas.acingestion.service;
 
 import com.google.gson.JsonIOException;
-import com.hitachi.maas.ilspringlibrary.streaming.annotation.MaasProducerUser;
-import com.hitachirail.maas.acingestion.beans.*;
+import com.hitachirail.maas.acingestion.beans.SeatCountingDataAggregate;
+import com.hitachirail.maas.acingestion.beans.StationCongestion;
 import com.hitachirail.maas.acingestion.dto.*;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import com.hitachirail.maas.securityframework.authvalidation.AuthClaimRule;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -26,14 +25,14 @@ public class IngestionServiceImpl  implements IngestionService {
     private static final String SCOPE_VALUE = "ac-ingestion";
 
     private ProducerService<PositionDTO> positionProducer;
-    private ProducerService<BluetoothCountingData> bluetoothCountingDataProducer;
+    private ProducerService<BluetoothCountingDataDTO> bluetoothCountingDataProducer;
     private ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer;
     private ProducerService<StationCongestion> stationCongestionProducer;
     private ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer;
 
     @Autowired
     public IngestionServiceImpl(ProducerService<PositionDTO> positionProducer,
-                                ProducerService<BluetoothCountingData> bluetoothCountingDataProducer,
+                                ProducerService<BluetoothCountingDataDTO> bluetoothCountingDataProducer,
                                 ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer,
                                 ProducerService<StationCongestion> stationCongestionProducer,
                                 ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer) {
@@ -55,18 +54,26 @@ public class IngestionServiceImpl  implements IngestionService {
     @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishBluetoothCountingDataOnInternalKafkaQueues(List<BluetoothCountingDataDTO> bluetoothCountingDatumDTOS) throws Exception {
-        this.bluetoothCountingDataProducer.publishListOnKafkaBulkTopic(convertListToBusinessList(bluetoothCountingDatumDTOS, BluetoothCountingData.class));
+        for(BluetoothCountingDataDTO bluetoothCountingDataDTO: bluetoothCountingDatumDTOS) {
+            for(DeviceDTO device :bluetoothCountingDataDTO.getDeviceDTOS() ){
+                if(StringUtils.isEmpty(device.getStopId()) &&(device.getLatitude()==null||device.getLongitude()== null))
+                    throw new JsonIOException("Error in data with data with vehicle_id "+
+                            bluetoothCountingDataDTO.getVehicleId()+": stopId, latitude and longitude cannot all be null");
+            }
+        }
+        this.bluetoothCountingDataProducer.publishListOnKafkaBulkTopic(bluetoothCountingDatumDTOS);
     }
 
     @AuthClaimVerify
     @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishPeopleCountingDataOnInternalKafkaQueues(List<PeopleCountingDataDTO> peopleCountingDatumDTOS) throws Exception {
-        peopleCountingDatumDTOS.stream().filter(p -> StringUtils.isEmpty(p.getStopId()) && (p.getLongitude() == null || p.getLongitude() == null)).
-                forEach(p -> {
-                    throw new JsonIOException("Error in data with data with vehicle_id "+
-                            p.getVehicleId()+": stopId, latitude and longitude cannot all be null");
-                } );
+       for(PeopleCountingDataDTO peopleCountingData : peopleCountingDatumDTOS){
+           if(StringUtils.isEmpty(peopleCountingData.getStopId()) &&(peopleCountingData.getLatitude()==null||peopleCountingData.getLongitude()== null))
+               throw new JsonIOException("Error in data with data with vehicle_id "+
+                       peopleCountingData.getVehicleId()+": stopId, latitude and longitude cannot all be null");
+
+       }
         this.peopleCountingDataProducer.publishListOnKafkaBulkTopic(peopleCountingDatumDTOS);
     }
 
