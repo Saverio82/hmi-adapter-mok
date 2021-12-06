@@ -2,7 +2,6 @@ package com.hitachirail.maas.acingestion.service;
 
 import com.google.gson.JsonIOException;
 import com.hitachirail.maas.acingestion.beans.SeatCountingDataAggregate;
-import com.hitachirail.maas.acingestion.beans.StationCongestion;
 import com.hitachirail.maas.acingestion.dto.*;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import com.hitachirail.maas.securityframework.authvalidation.AuthClaimRule;
@@ -27,14 +26,14 @@ public class IngestionServiceImpl  implements IngestionService {
     private ProducerService<PositionDTO> positionProducer;
     private ProducerService<BluetoothCountingDataDTO> bluetoothCountingDataProducer;
     private ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer;
-    private ProducerService<StationCongestion> stationCongestionProducer;
+    private ProducerService<StationCongestionDTO> stationCongestionProducer;
     private ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer;
 
     @Autowired
     public IngestionServiceImpl(ProducerService<PositionDTO> positionProducer,
                                 ProducerService<BluetoothCountingDataDTO> bluetoothCountingDataProducer,
                                 ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer,
-                                ProducerService<StationCongestion> stationCongestionProducer,
+                                ProducerService<StationCongestionDTO> stationCongestionProducer,
                                 ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer) {
         this.positionProducer = positionProducer;
         this.bluetoothCountingDataProducer = bluetoothCountingDataProducer;
@@ -89,7 +88,7 @@ public class IngestionServiceImpl  implements IngestionService {
     @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishStationCongestionOnInternalKafkaQueues(List<StationCongestionDTO> stationCongestionDTOData) throws Exception {
-        this.stationCongestionProducer.publishListOnKafkaBulkTopic(convertListToBusinessList(stationCongestionDTOData, StationCongestion.class));
+        this.stationCongestionProducer.publishListOnKafkaBulkTopic(stationCongestionDTOData);
     }
 
     private <S, T> List<T> convertListToBusinessList(List<S> sourceList, Class<T> targetClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
