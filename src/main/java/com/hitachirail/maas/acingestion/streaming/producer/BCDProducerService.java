@@ -40,12 +40,4 @@ public class BCDProducerService implements ProducerService <BluetoothCountingDat
         this.internalKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
 
-    @Override
-    public void publishListOnKafkaOfficialTopic(List<BluetoothCountingDataDTO> payload) throws JsonProcessingException {
-        log.debug("publish list of {} elements into 'BluetoothCountingData' bulk topic", payload.size());
-
-        this.officialKafkaProducer.publish(objectMapper.writeValueAsString(payload));
-    }
-
-
 }
