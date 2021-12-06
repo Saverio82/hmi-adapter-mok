@@ -53,7 +53,17 @@ public class SCDABusinessFactory {
     }
 
     private static TrainElementSeatCountingDataAggregate buildTrainElementSeatCountingDataAggregate(SeatCountingDataAggregateDTO data, Long tenantId){
-        TrainElementSeatCountingDataAggregate trainElementSeatCountingDataAggregate =new TrainElementSeatCountingDataAggregate().builder().build();
+        TrainElementSeatCountingDataAggregate trainElementSeatCountingDataAggregate =new TrainElementSeatCountingDataAggregate().builder()
+                .trainElementId(data.getVehicleId())
+                .tenantId(tenantId)
+                .trainId(data.getParentVehicleId())
+                .messageId(data.getMessageId())
+                .serviceJourneyId(data.getTripId())
+                .seatOccupancy(data.getSeatingOccupancy())
+                .sourceSystemId(data.getSourceSystemId())
+                .diagnosticStatus(data.getDiagnosticStatus())
+                .sysTimestamp(data.getSysTimestamp())
+                .build();
 
         List<SeatCountingDataDetailsDTO> dataDetailsDTOS = data.getSeatCountingDataDetailsDTOList();
         List<SeatCountingDataDetails> dataDetails = new ArrayList<>();
