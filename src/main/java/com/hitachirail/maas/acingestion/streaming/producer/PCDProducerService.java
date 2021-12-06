@@ -40,12 +40,6 @@ public class PCDProducerService implements ProducerService<PeopleCountingDataDTO
          this.internalKafkaProducer.publish(objectMapper.writeValueAsString(payload));
     }
 
-    @Override
-    public void publishListOnKafkaOfficialTopic(List<PeopleCountingDataDTO> payload) throws JsonProcessingException {
-        log.debug("publish list of {} elements into 'PeopleCountingData' bulk topic", payload.size());
-
-        this.officialKafkaProducer.publish(objectMapper.writeValueAsString(payload));
-    }
 
 
 }
