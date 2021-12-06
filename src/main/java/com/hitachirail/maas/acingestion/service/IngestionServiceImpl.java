@@ -1,7 +1,6 @@
 package com.hitachirail.maas.acingestion.service;
 
 import com.google.gson.JsonIOException;
-import com.hitachirail.maas.acingestion.beans.SeatCountingDataAggregate;
 import com.hitachirail.maas.acingestion.dto.*;
 import com.hitachirail.maas.acingestion.streaming.producer.ProducerService;
 import com.hitachirail.maas.securityframework.authvalidation.AuthClaimRule;
@@ -27,14 +26,14 @@ public class IngestionServiceImpl  implements IngestionService {
     private ProducerService<BluetoothCountingDataDTO> bluetoothCountingDataProducer;
     private ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer;
     private ProducerService<StationCongestionDTO> stationCongestionProducer;
-    private ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer;
+    private ProducerService<SeatCountingDataAggregateDTO> seatCountingDataAggregateProducer;
 
     @Autowired
     public IngestionServiceImpl(ProducerService<PositionDTO> positionProducer,
                                 ProducerService<BluetoothCountingDataDTO> bluetoothCountingDataProducer,
                                 ProducerService<PeopleCountingDataDTO> peopleCountingDataProducer,
                                 ProducerService<StationCongestionDTO> stationCongestionProducer,
-                                ProducerService<SeatCountingDataAggregate> seatCountingDataAggregateProducer) {
+                                ProducerService<SeatCountingDataAggregateDTO> seatCountingDataAggregateProducer) {
         this.positionProducer = positionProducer;
         this.bluetoothCountingDataProducer = bluetoothCountingDataProducer;
         this.peopleCountingDataProducer = peopleCountingDataProducer;
@@ -80,8 +79,7 @@ public class IngestionServiceImpl  implements IngestionService {
     @AuthClaimRule(claimProperty = CLAIM_PROPERTY, equalToValue = SCOPE_VALUE, required = true)
     @Override
     public void publishSeatCountingDataAggregateOnInternalKafkaQueues(List<SeatCountingDataAggregateDTO> seatCountingDataAggregateDTOData) throws Exception {
-        this.seatCountingDataAggregateProducer.publishListOnKafkaBulkTopic(convertListToBusinessList(seatCountingDataAggregateDTOData,
-                SeatCountingDataAggregate.class));
+        this.seatCountingDataAggregateProducer.publishListOnKafkaBulkTopic(seatCountingDataAggregateDTOData);
     }
 
     @AuthClaimVerify
